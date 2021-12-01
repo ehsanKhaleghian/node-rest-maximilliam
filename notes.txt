@@ -1,0 +1,18 @@
+To start a new app:
+1- npm init;
+2- npm install --save express;
+3- npm install --save nodemon;
+4- In the package.json file :
+    ...
+    "scripts": {
+        ...
+        "start": "nodemon app.js"
+    }
+5- Create app.js;
+6- Setup nodejs server inside app.js;
+7- npm install --save body-parser;
+8- Create a "routes" folder;
+9- Create the file for router for example in here feed.js;
+10- Create "controllers" folder;
+11- Import controller in route file;
+12- Register route in the app.js;
