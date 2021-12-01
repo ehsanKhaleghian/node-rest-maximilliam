@@ -16,3 +16,9 @@ To start a new app:
 10- Create "controllers" folder;
 11- Import controller in route file;
 12- Register route in the app.js;
+
+*CORS errors:
+    -CORS stand for Cross-Origin Resource Sharing;
+    -If client and server is on a same server that is Ok like localhost:3000 but
+        if they are on different servers like client on localhost:3000 and server
+        on localhost:4000 you will get CORS error.
