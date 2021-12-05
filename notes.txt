@@ -22,3 +22,15 @@ To start a new app:
     -If client and server is on a same server that is Ok like localhost:3000 but
         if they are on different servers like client on localhost:3000 and server
         on localhost:4000 you will get CORS error.
+
+13- Codes added to remove CORS errors :
+    app.use((req, res, next) => {
+        res.setHeader("Access-Control-Allow-Origin","*");
+        //**For allowing our desired methods*/
+        res.setHeader("Access-Control-Allow-Methods","GET, POST, PUT, PATCH, DELETE");
+        //**For authorizing*/
+        res.setHeader("Access-Control-Allow-Headers","Content-type, Authorized");
+        next();
+    })
+14- npm install --save express-validator
+15- npm install --save mongoose

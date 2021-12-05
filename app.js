@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose")
 
 const feedRoutes = require("./routes/feed");
 
@@ -18,10 +19,15 @@ app.use((req, res, next) => {
     //**For authorizing*/
     res.setHeader("Access-Control-Allow-Headers","Content-type, Authorized");
     next();
-
 })
 
 //**This means that any request that start with "feed" will go to feedRoutes.*/
 app.use("/feed", feedRoutes);
 
-app.listen(8080);
+//**Establish a mongoose connection*/
+mongoose.connect("mongodb+srv://ehsanScript:E55268199Yk@cluster0.ytldu.mongodb.net/messages?retryWrites=true&w=majority")
+    .then(result => {
+        app.listen(8080);
+    })
+    .catch(err => console.log(err))
+
