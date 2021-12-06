@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const path = require("path");
 
 const feedRoutes = require("./routes/feed");
 
@@ -9,6 +10,8 @@ const app = express();
 //**This is good for application/json files but the previous one was good for*/
 //**    x-www-form-urlencoded which we took from <form> of html.*/
 app.use(bodyParser.json());
+//**For request goes into /images */
+app.use("/images", express.static(path.join(__dirname,"images")))
 
 //**By this we stop CORS errors and will by the second argument we can define which addresses could access*/
 //**    our api which in here is "*" means every addresses.*/
@@ -23,6 +26,14 @@ app.use((req, res, next) => {
 
 //**This means that any request that start with "feed" will go to feedRoutes.*/
 app.use("/feed", feedRoutes);
+
+app.use((error,req, res, next) => {
+    console.log("ERROR:::", error);
+    const status = error.statusCode || 500;
+    const message = error.message;
+    res.status(status).json({message: message});
+
+})
 
 //**Establish a mongoose connection*/
 mongoose.connect("mongodb+srv://ehsanScript:E55268199Yk@cluster0.ytldu.mongodb.net/messages?retryWrites=true&w=majority")
