@@ -2,14 +2,44 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
+const multer =require("multer");
+const { v4: uuidv4 } = require('uuid');
 
 const feedRoutes = require("./routes/feed");
 
 const app = express();
 
+//**These lines will not work on window.*/
+// const storage = multer.diskStorage({
+//     destination: function(req, file, cb) {
+//         cb(null, 'images');
+//     },
+//     filename: function(req, file, cb) {
+//         cb(null, new Date().toISOString() + file.originalname);
+//     }
+// });
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'images');
+    },
+    filename: function(req, file, cb) {
+        cb(null, uuidv4())
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimeType === "image/png" || file.mimeType === "image/jpg" || file.mimeType === "image/jpeg") {
+        cb(null, true);
+    }else {
+        cb (null, false)
+    }
+}
+
 //**This is good for application/json files but the previous one was good for*/
 //**    x-www-form-urlencoded which we took from <form> of html.*/
 app.use(bodyParser.json());
+app.use(multer({storage: storage, fileFilter}).single("image"))
 //**For request goes into /images */
 app.use("/images", express.static(path.join(__dirname,"images")))
 

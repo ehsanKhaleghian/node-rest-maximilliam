@@ -1,22 +1,22 @@
 const {validationResult} = require("express-validator");
-const Post = require("../models/post")
+const Post = require("../models/post");
+
+const errorHandler = (err, next) => {
+    if (!err.statusCode) {
+        err.statusCode = 500;
+    }
+    next(err);
+}
 
 exports.getPosts = (req, res, next) => {
 //**Error code is super important because we have to show error to client based on our error*/
-    res.status(200).json({
-        posts: [
-                {
-                    _id: "1366",
-                    title: "First Post",
-                    content: "This is the first post",
-                    imageUrl: "images/city.jpg",
-                    creator : {
-                        name: "ehsan"
-                    },
-                    createdAt: new Date()
-                }
-            ]
-    })
+    Post.find()
+        .then(posts => {
+            res.status(200).json({message: "Fetched posts successfully", posts: posts})
+        })
+        .catch(err => {
+            errorHandler(err, next);
+        });
 };
 
 exports.createPost = (req, res, next) => {
@@ -27,9 +27,14 @@ exports.createPost = (req, res, next) => {
         //**By throwing error it will automatically exit the function execution an throw the error*/
         throw error;
     }
+    if (!req.file) {
+        const error = new Error("No image provided. ");
+        error.statusCode = 422;
+        throw error;
+    }
     const title = req.body.title;
     const content = req.body.content;
-    const imageUrl = req.body.imageUrl;
+    const imageUrl = req.file.path.replace("\\" ,"/");
     const creator = req.body.creator
     // Create post in db
     const post = new Post({
@@ -45,11 +50,25 @@ exports.createPost = (req, res, next) => {
             post: result
         })
     } ).catch(err => {
-        if (!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err);
+        errorHandler(err, next);
     })
+};
 
+exports.getPost = (req, res, next) => {
+    //**The name "postId" is exactly what we assigned in the route ---->  post/:postId */
+    const postId = req.params.postId;
+    Post.findById(postId)
+        .then(post => {
+            if(!post) {
+                const error = new Error("Could not find a post.");
+                error.statusCode = 404;
+                //**If you throw an error inside then block so it would go to catch block, so next() is not needed.*/
+                throw error;
+            }
+            res.statusCode(200).json({message: "Post fetched", post: post})
+        })
+        .catch(err => {
+            errorHandler(err, next);
+        })
 }
 
