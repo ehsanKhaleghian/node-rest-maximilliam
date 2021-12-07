@@ -27,6 +27,7 @@ exports.createPost = (req, res, next) => {
         //**By throwing error it will automatically exit the function execution an throw the error*/
         throw error;
     }
+    console.log("BODY:::",req.body);
     if (!req.file) {
         const error = new Error("No image provided. ");
         error.statusCode = 422;

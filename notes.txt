@@ -36,3 +36,5 @@ To start a new app:
 15- npm install --save mongoose
 16- npm install --save multer
 17- For windows : npm install --save uuid
+
+*json()--> only works for texts
