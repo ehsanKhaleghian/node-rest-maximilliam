@@ -1,12 +1,14 @@
 const {validationResult} = require("express-validator");
 const Post = require("../models/post");
+const fs = require("fs");
+const path = require("path")
 
 const errorHandler = (err, next) => {
     if (!err.statusCode) {
         err.statusCode = 500;
     }
     next(err);
-}
+};
 
 exports.getPosts = (req, res, next) => {
 //**Error code is super important because we have to show error to client based on our error*/
@@ -27,7 +29,6 @@ exports.createPost = (req, res, next) => {
         //**By throwing error it will automatically exit the function execution an throw the error*/
         throw error;
     }
-    console.log("BODY:::",req.body);
     if (!req.file) {
         const error = new Error("No image provided. ");
         error.statusCode = 422;
@@ -35,8 +36,8 @@ exports.createPost = (req, res, next) => {
     }
     const title = req.body.title;
     const content = req.body.content;
-    const imageUrl = req.file.path.replace("\\" ,"/");
-    const creator = req.body.creator
+    const imageUrl = "http://localhost:8080/"+req.file.path.replace("\\" ,"/");
+    const creator = {name: "Ehsan"}
     // Create post in db
     const post = new Post({
         title,
@@ -71,5 +72,51 @@ exports.getPost = (req, res, next) => {
         .catch(err => {
             errorHandler(err, next);
         })
+};
+
+exports.updatePost = (req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        const error= new Error("Validation failed, entered data is incorrect.");
+        error.statusCode = 422;
+        //**By throwing error it will automatically exit the function execution an throw the error*/
+        throw error;
+    }
+    const postId = req.params.postId;
+    const title = req.body.title;
+    const content = req.body.content;
+    let imageUrl = req.body.imageUrl;
+    if (req.file) {
+        imageUrl = req.file
+    }
+    if(!imageUrl) {
+        const error = new Error("No file picked.");
+        error.statusCode = 422;
+        throw error;
+    }
+
+    Post.findById(postId)
+        .then(post => {
+            if(!post){
+                const error = new Error("Could not find the post.");
+                error.statusCode = 404;
+                throw error;
+            }
+            post.title = title;
+            post.imageUrl = imageUrl;
+            post.content = content;
+            return post.save();
+        })
+        .then(result => {
+            res.status(200).json({message: "Post updated", post: result})
+        })
+        .catch(err => {
+            errorHandler(err, next);
+        })
+};
+
+const clearImage = filePath => {
+    filePath = path.join(__dirname, "..", filePath);
+    fs.unlink(filePath)
 }
 

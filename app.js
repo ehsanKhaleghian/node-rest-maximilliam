@@ -9,27 +9,27 @@ const feedRoutes = require("./routes/feed");
 
 const app = express();
 
-//**These lines will not work on window.*/
-// const storage = multer.diskStorage({
-//     destination: function(req, file, cb) {
-//         cb(null, 'images');
-//     },
-//     filename: function(req, file, cb) {
-//         cb(null, new Date().toISOString() + file.originalname);
-//     }
-// });
-
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'images');
     },
     filename: function(req, file, cb) {
-        cb(null, uuidv4())
+        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
     }
 });
 
+//**These line didn't work.*/
+// const storage = multer.diskStorage({
+//     destination: function(req, file, cb) {
+//         cb(null, 'images');
+//     },
+//     filename: function(req, file, cb) {
+//         cb(null, uuidv4())
+//     }
+// });
+
 const fileFilter = (req, file, cb) => {
-    if (file.mimeType === "image/png" || file.mimeType === "image/jpg" || file.mimeType === "image/jpeg") {
+    if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
         cb(null, true);
     }else {
         cb (null, false)
