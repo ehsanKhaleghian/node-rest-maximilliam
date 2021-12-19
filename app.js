@@ -6,6 +6,7 @@ const multer =require("multer");
 const { v4: uuidv4 } = require('uuid');
 
 const feedRoutes = require("./routes/feed");
+const authRouts = require("./routes/auth");
 
 const app = express();
 
@@ -56,12 +57,14 @@ app.use((req, res, next) => {
 
 //**This means that any request that start with "feed" will go to feedRoutes.*/
 app.use("/feed", feedRoutes);
+app.use("/auth", authRouts);
 
 app.use((error,req, res, next) => {
     console.log("ERROR:::", error);
     const status = error.statusCode || 500;
     const message = error.message;
-    res.status(status).json({message: message});
+    const data = error.data;
+    res.status(status).json({message, data});
 
 })
 
