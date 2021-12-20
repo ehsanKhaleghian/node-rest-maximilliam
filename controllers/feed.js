@@ -1,7 +1,8 @@
 const {validationResult} = require("express-validator");
 const Post = require("../models/post");
 const fs = require("fs");
-const path = require("path")
+const path = require("path");
+const User = require("../models/user")
 
 const errorHandler = (err, next) => {
     if (!err.statusCode) {
@@ -57,20 +58,31 @@ exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
     const imageUrl = "http://localhost:8080/"+req.file.path.replace("\\" ,"/");
-    const creator = {name: "Ehsan"}
+    //**The userId is passed in the middleware in is-auth*/
+    let creator;
     // Create post in db
     const post = new Post({
         title,
         content,
         imageUrl,
-        creator,
+        creator:req.userId,
     });
-    post.save().then(result => {
-    //**Status 201 is better if you want to tell the client success and data created*/
-        res.status(201).json({
-            message: "Post created successfully",
-            post: result
+    post.save()
+        .then(result => {
+            return User.findOne(req.userId)
         })
+        .then(user => {
+            creator = user;
+            user.posts.push(post);
+            user.save();
+        })
+        .then(result => {
+                 //**Status 201 is better if you want to tell the client success and data created*/
+                res.status(201).json({
+                    message: "Post created successfully",
+                    post,
+                    creator: {id: creator._id, name: creator.name}
+                })
     } ).catch(err => {
         errorHandler(err, next);
     })
@@ -122,6 +134,11 @@ exports.updatePost = (req, res, next) => {
                 error.statusCode = 404;
                 throw error;
             }
+            if (post.creator.toString() !== req.userId.toString()) {
+                const error = new Error("Not authorized");
+                error.statusCode = 403;
+                throw error;
+            }
             //**To delete image if it is not the same as before*/
             if (imageUrl !== post.imageUrl) {
                 clearImage(post.imageUrl)
@@ -148,8 +165,20 @@ exports.deletePost =(req, res, next) => {
                 error.statusCode = 404;
                 throw error;
             }
+            if (post.creator.toString() !== req.userId.toString()) {
+                const error = new Error("Not authorized");
+                error.statusCode = 403;
+                throw error;
+            }
             clearImage(post.imageUrl);
             post.findByIdAndRemove(postId);
+        })
+        .then(result => {
+            User.findById(req.userId);
+        })
+        .then(user => {
+            user.posts.pull(postId);
+            return user.save();
         })
         .then(result => {
             res.status(200).json({message: "The post is deleted."})

@@ -61,3 +61,13 @@ To start a new app:
     *Bearer--> is a convention to identify type of token, typically it is used for jwt, it is
         not a must but is a convention.
 
+//---------------------------------------------------------------------------------------//
+SOCKET IO:
+*Socket io is based on websocket. websocket is a protocol like http by which we can
+    push data to the client from server.
+1- npm install --save socket.io
+2- add it in the app.listen() in app.js;
+* In the React app we should install socket.io-client package too:
+    npm install --save socket.to-client. Then :
+        import openSocket from "socket.io-client"
+

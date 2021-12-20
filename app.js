@@ -71,7 +71,13 @@ app.use((error,req, res, next) => {
 //**Establish a mongoose connection*/
 mongoose.connect("mongodb+srv://ehsanScript:E55268199Yk@cluster0.ytldu.mongodb.net/messages?retryWrites=true&w=majority")
     .then(result => {
-        app.listen(8080);
+        //**Also customized for socket io*/
+        const server = app.listen(8080);
+        const io = require("socket.io")(server);
+        io.on("connection", socket => {
+            console.log("CLIENT CONNECTED")
+            console.log("CLIENT CONNECTED")
+        })
     })
     .catch(err => console.log(err))
 
