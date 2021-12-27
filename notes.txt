@@ -71,3 +71,33 @@ SOCKET IO:
     npm install --save socket.to-client. Then :
         import openSocket from "socket.io-client"
 
+//----------------------------------------------------------------------------------------//
+DEPLOYING THE APP:
+1- Create env for the app;
+2- change scripts :
+        "scripts": {
+            "test": "echo \"Error: no test specified\" && exit 1",
+            "start": "node app.js",
+            "start-server": "node app.js",
+            "start:dev" : "nodemon app.js"
+          }
+3-We can set environmental variables in the package.json in "scripts" like:
+         "scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1",
+                    "start": "MONGO_USER=ehsanScript MONGO_PASSWORD=E55268199Yk PORT=8080 node app.js",
+                    "start-server": "node app.js",
+                    "start:dev" : "nodemon app.js"
+                  }
+4- Use "helmet" package for secure our headers.
+5- npm install --save helmet;
+6- You can use it simply as a middleware : app.use(helmet());
+//**Most servers use compression, and we don't have to use this middleware*/
+7- We should use node compression for compressing our assets, for that install this package:
+    npm install --save compression
+8- In the app.js import compression and add it like middleware.
+9- For logging requests use this package:
+    npm install --save morgan;
+10- Use it in the app.js file.
+11- Another logging option is using console.log(), read this blog https://blog.risingstack.com/node-js-logging-tutorial/.
+
+

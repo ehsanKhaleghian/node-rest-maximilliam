@@ -1,0 +1,8 @@
+{
+  "env" : {
+    "MONGO_USER": "ehsanScript",
+    "MONGO_PASSWORD": "E55268199Yk",
+    "MONGO_DEFAULT_DATABASE": "shop",
+    "PORT": 8080
+  }
+}
