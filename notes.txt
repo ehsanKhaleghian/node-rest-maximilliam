@@ -99,5 +99,20 @@ DEPLOYING THE APP:
     npm install --save morgan;
 10- Use it in the app.js file.
 11- Another logging option is using console.log(), read this blog https://blog.risingstack.com/node-js-logging-tutorial/.
+* We can create our own ssl, but it is recommended to use in the development, because in the production browsers
+    will warn that this site is not secure...
+12- In the window it is needed to install "openssl" but it's not needed in the linux and mac.
+13- Link for installing openssl in window: https://slproweb.com/products/Win32OpenSSL.html.
+14- After installing openssl package run this code in the terminal:
+    $ openssl req -nodes -new -x509 -keyout server.key -out server.cert
+15- After running code above it will ask some questions and the most important is Common Name and you should
+    set it to localhost:
+    Common Name (e.g. server FQDN or YOUR name) []: localhost;
+16- Two new file will appear in the directory.
+17- In the app.js import https :
+        const https = require("https");
+
+
+
 
 

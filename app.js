@@ -9,13 +9,16 @@ const helmet = require("helmet");
 //**Most servers use compression and we don't have to use this middleware*/
 const compression = require("compression");
 const morgan =  require("morgan");
+const https = require("https");
 
 const app = express();
 
 const feedRoutes = require("./routes/feed");
 const authRouts = require("./routes/auth");
 
-
+//** We want to stop reading server until this file is read, so we used readFileSync */
+const privateKey = fs.readFileSync("server.key")
+const certificate = fs.readFileSync("server.cert")
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -87,6 +90,9 @@ app.use((error,req, res, next) => {
 mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.ytldu.mongodb.net/messages?retryWrites=true&w=majority`)
     .then(result => {
         //**Also customized for socket io*/
+        //**In createServer the first argument is configuration and second one is our app.*/
+        //**This kind of ssl is used for custom ssl key*/
+        // const server = https.createServer({key: privateKey, cert: certificate}, app).listen(process.env.PORT || 3000);
         const server = app.listen(process.env.PORT || 3000);
         const io = require("./socket").init(server);
         io.on("connection", socket => {
